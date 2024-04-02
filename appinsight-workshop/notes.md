@@ -12,11 +12,12 @@ https://opentelemetry.io/docs/
 
 https://dzone.com/refcardz/getting-started-with-opentelemetry
 
-Origin
+### Intro
 
+```
 Open Telemetry (2019) = OpenTracing (in 2016 became Cloud Native Computing Foundation (CNCF))
                       + OpenCensus (opensourced by Google in 2018)
-
+```
 
 Goals:
   * Monitoring    - collects and analyzes telemetry data and acts according to
@@ -24,7 +25,6 @@ Goals:
   * Observability - is the ability to ask questions about the holistic state
                     of a system through the signals it generates.
 
-Main Compoments: https://opentelemetry.io/docs/what-is-opentelemetry/#main-opentelemetry-components
 
 Components
   * App
@@ -37,10 +37,15 @@ Components
     - Exporters
   * Vendor backends for storing and visualising data
 
+```
 API -> Processing -> Exporter ------> Receivers -> Processors -> Exporters -> telemtry db
+```
+
+More [here](https://opentelemetry.io/docs/what-is-opentelemetry/#main-opentelemetry-components)
+
 
 Telemetry [signals](https://opentelemetry.io/docs/concepts/signals/)
-  — logs
+  - logs
   - metrics
   - traces
   - events (specific type of logs)

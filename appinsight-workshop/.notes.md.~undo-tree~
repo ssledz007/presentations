@@ -1,0 +1,31 @@
+(undo-tree-save-format-version . 1)
+"f073b6c3b3e310386af0915aec094a9873c786e0"
+[nil nil nil nil (26124 10763 835621 0) 0 nil]
+([nil nil ((200 . 204) (t 26124 9981 916582 357000)) nil (26124 10763 835620 0) 0 nil])
+([nil nil ((#("n" 0 1 (fontified t)) . 204) (#("i" 0 1 (fontified t)) . 204) (#("g" 0 1 (fontified t)) . 204) (#("i" 0 1 (fontified t)) . 204) (#("r" 0 1 (fontified t)) . 204) (#("O" 0 1 (fontified t)) . 204)) nil (26124 10763 835619 0) 0 nil])
+([nil nil ((204 . 209)) nil (26124 10763 835618 0) 0 nil])
+([nil nil ((210 . 211)) nil (26124 10763 835617 0) 0 nil])
+([nil nil ((211 . 214)) nil (26124 10763 835617 0) 0 nil])
+([nil nil ((376 . 379)) nil (26124 10763 835616 0) 0 nil])
+([nil nil ((#("Main Compoments: https://opentelemetry.io/docs/what-is-opentelemetry/#main-opentelemetry-components
+" 0 80 (fontified t) 80 99 (fontified t face (whitespace-line)) 99 100 (fontified t)) . 679) (undo-tree-id32 . -100) (undo-tree-id33 . -57) (undo-tree-id34 . -57)) nil (26124 10763 835615 0) 0 nil])
+([nil nil ((954 . 956)) nil (26124 10763 835613 0) 0 nil])
+([nil nil ((nil rear-nonsticky nil 1054 . 1055) (nil fontified nil 1054 . 1055) (nil fontified nil 1035 . 1054) (nil fontified nil 955 . 1035) (955 . 1055)) nil (26124 10763 835612 0) 0 nil])
+([nil nil ((#("s" 0 1 (fontified t)) . 955) (#("t" 0 1 (fontified t)) . 955) (#("n" 0 1 (fontified t)) . 955) (#("e" 0 1 (fontified t)) . 955) (#("m" 0 1 (fontified t)) . 955) (#("o" 0 1 (fontified t)) . 955) (#("p" 0 1 (fontified t)) . 955) (#("m" 0 1 (fontified t)) . 955) (#("o" 0 1 (fontified t)) . 955) (#("C" 0 1 (fontified t)) . 955) (#(" " 0 1 (fontified t)) . 955) (#("n" 0 1 (fontified t)) . 955) (#("i" 0 1 (fontified t)) . 955) (#("a" 0 1 (fontified t)) . 955) (#("M" 0 1 (fontified t)) . 955)) nil (26124 10763 835609 0) 0 nil])
+([nil nil ((955 . 960)) nil (26124 10763 835607 0) 0 nil])
+([nil nil ((960 . 964)) nil (26124 10763 835606 0) 0 nil])
+([nil nil ((960 . 961)) nil (26124 10763 835605 0) 0 nil])
+([nil nil ((965 . 966)) nil (26124 10763 835605 0) 0 nil])
+([nil nil ((#(" " 0 1 (fontified t)) . 966) (#(":" 0 1 (fontified t)) . 966) (undo-tree-id31 . -1)) nil (26124 10763 835604 0) 0 nil])
+([nil nil ((966 . 967)) nil (26124 10763 835602 0) 0 nil])
+([nil nil ((1049 . 1050)) nil (26124 10763 835602 0) 0 nil])
+([nil nil ((863 . 864)) nil (26124 10763 835601 0) 0 nil])
+([nil nil ((864 . 867)) nil (26124 10763 835600 0) 0 nil])
+([nil nil ((958 . 961)) nil (26124 10763 835600 0) 0 nil])
+([nil nil ((961 . 962)) nil (26124 10763 835599 0) 0 nil])
+([nil nil ((#("
+" 0 1 (fontified t)) . -1129) (undo-tree-id0 . -1) (undo-tree-id1 . -1) (undo-tree-id2 . -1) (undo-tree-id3 . -1) (undo-tree-id4 . -1) (undo-tree-id5 . -1) (undo-tree-id6 . -1) (undo-tree-id7 . -1) (undo-tree-id8 . -1) (undo-tree-id9 . -1) (undo-tree-id10 . -1) (#(" " 0 1 (fontified t)) . -1130) (undo-tree-id11 . -1) (undo-tree-id12 . -1) (undo-tree-id13 . -1) (undo-tree-id14 . -1) (undo-tree-id15 . -1) (undo-tree-id16 . -1) (undo-tree-id17 . -1) (undo-tree-id18 . -1) (#(" " 0 1 (fontified t)) . -1131) (undo-tree-id19 . -1) (undo-tree-id20 . -1) (undo-tree-id21 . -1) (undo-tree-id22 . -1) (undo-tree-id23 . -1) (undo-tree-id24 . -1) (#("—" 0 1 (fontified t)) . -1132) (undo-tree-id25 . -1) (undo-tree-id26 . -1) (undo-tree-id27 . -1) (undo-tree-id28 . -1) (#(" " 0 1 (fontified t)) . -1133) (undo-tree-id29 . -1) (undo-tree-id30 . -1) 1134) nil (26124 10763 835596 0) 0 nil])
+([nil nil ((1129 . 1130)) nil (26124 10763 835568 0) 0 nil])
+([nil nil ((1130 . 1132)) nil (26124 10763 835567 0) 0 nil])
+([nil current ((1132 . 1134)) nil (26124 10763 835562 0) 0 nil])
+nil
