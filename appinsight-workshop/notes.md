@@ -248,7 +248,7 @@ Enable Azure Monitor OpenTelemetry for Java/Scala App
 * Optionally provide configuration file `applicationinsights.json`
 * Optionally setup log appender `logback.xml`
 
-For more info go [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=java)
+For more info click [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=java)
 
 ## Java agent configuration in sbt
 
@@ -352,12 +352,14 @@ Example config could look following ([full reference](https://learn.microsoft.co
 }
 ```
 
-What can be set in `applicationinsights.json`
+What can be set in `applicationinsights.json` (more [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/java-standalone-config))
 * sampling
 * custom dimension
-* jmx metrics
-* auto instrumentation (enable / disable)
+* [jmx metrics](https://learn.microsoft.com/en-us/azure/azure-monitor/app/java-jmx-metrics-configuration)
+  - how to find out what metrics are available?
+* [auto collected telemetry](https://learn.microsoft.com/en-us/azure/azure-monitor/app/java-standalone-config#suppress-specific-autocollected-telemetry) (enable / disable)
 * edit / remove / change / add attributes
+  - [telemetry processors](https://learn.microsoft.com/en-us/azure/azure-monitor/app/java-standalone-telemetry-processors)
 * self diagnostics (on / off)
 
 ### Custom dimension
@@ -384,15 +386,100 @@ lazy val core = (project in file("modules/core"))
     ...
   )
 ```
+## Log appender
+
+`logback.xml`
+```
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>
+        %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <appender name="APPLICATION_INSIGHTS" 
+    class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
+
+  <root level="${LOG_LEVEL_ROOT:-INFO}">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="APPLICATION_INSIGHTS"/>
+  </root>
+</configuration>
+```
+
+dependency
+```
+"com.microsoft.azure" % "applicationinsights-logging-logback" % 2.6.4
+```
+
+Scala Tracing / Metrics API
+===========================
+
+* [otel4s](https://typelevel.org/otel4s/index.html) (OpenTelemetry implementation for Scala Cats)
+* da-ap-pda-nas-telemetry
 
 
-[//]: # ()
-[//]: # (* Install & Setup the client library)
+Custom Availability Tests
+===========================
 
-[//]: # (* using opentelemetry API)
+* Implemented using Appinsight Classic API
 
-[//]: # (* using [otel4s]&#40;https://typelevel.org/otel4s/index.html&#41; &#40;OpenTelemetry implementation for Scala&#41;)
+```
+"com.microsoft.azure" % "applicationinsights-core" % 3.5.1
+```
 
+```scala
+import cats.effect.implicits._
+import cats.effect.{Async, Concurrent, Sync, Temporal}
+import cats.syntax.all._
+import com.microsoft.applicationinsights.TelemetryClient
+import com.microsoft.applicationinsights.internal.util.LocalStringsUtils
+import com.microsoft.applicationinsights.telemetry.{AvailabilityTelemetry, Duration}
+import doobie.Transactor
+import doobie.implicits._
+import io.circe.syntax._
+import scala.concurrent.duration._
+
+case class Databases(conductorConn: Boolean, nasConn: Boolean)
+case class AppStatus(databases: Databases)
+
+val status: F[AppStatus] = ???
+
+def trackAvailability: F[Unit] =
+  availabilityTelemetry
+    .flatMap(telemetry => availabilityTest(telemetry))
+    .andWait(cfg.availabilityTestInterval)
+    .recoverWith { case err =>
+      val telemetry = newAvailabilityTelemetry
+      telemetry.setSuccess(false)
+      telemetry.setMessage(err.toString)
+      Logger[F].error(err)("Error during availability check") >>
+        availabilityTest(telemetry).attempt.void
+    }
+    .foreverM
+
+private def availabilityTelemetry: F[AvailabilityTelemetry] =
+  status.timed.map { case (ts, status) =>
+    val telemetry = newAvailabilityTelemetry
+    telemetry.setSuccess(status.databases.conductorConn && status.databases.nasConn)
+    if (!telemetry.getSuccess) {
+      telemetry.setMessage(status.asJson.noSpaces)
+    }
+    telemetry.setDuration(new Duration(ts.toMillis))
+    telemetry
+  }
+
+private def newAvailabilityTelemetry = {
+  val telemetry = new AvailabilityTelemetry()
+  telemetry.setName(cfg.name.value)
+  telemetry.setRunLocation(cfg.runLocation.value)
+  telemetry.setId(LocalStringsUtils.generateRandomIntegerId())
+  telemetry
+}
+
+```
 
 Resources
 =========
@@ -405,5 +492,6 @@ Resources
 * [Semantic Conventions for Database Metrics](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/database/database-metrics.md)
 * [Semantic Conventions for JVM Metrics](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/runtime/jvm-metrics.md)
 * [Enable Azure Monitor OpenTelemetry for .NET, Node.js, Python, and Java applications](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=java)
-
+* [ApplicationInsights-Java](https://github.com/microsoft/ApplicationInsights-Java)
+* [otel4s](https://typelevel.org/otel4s/index.html)
 
