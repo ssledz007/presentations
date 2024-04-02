@@ -8,6 +8,23 @@ Agenda
   - Logs
   - Events
   - Baggage
+* Enable Azure Monitor OpenTelemetry for Java/Scala App
+  - Steps
+  - Java agent configuration in sbt
+  - Configuration file `applicationinsights.json`
+  - Log appender
+* Scala Tracing / Metrics API
+  - otel4s (OpenTelemetry implementation for Scala Cats)
+  - da-ap-pda-nas-telemetry
+* Custom Availability Tests (Monitoring)
+* AppInsight dashboard
+* AppInsight alerts
+  - alert
+  - action groups
+* backup slides
+  - local environment why it is important
+  - k9s - Manage Your Kubernetes Clusters In Style
+  - test pyramid
 
 
 
@@ -419,11 +436,25 @@ Scala Tracing / Metrics API
 
 * [otel4s](https://typelevel.org/otel4s/index.html) (OpenTelemetry implementation for Scala Cats)
 * da-ap-pda-nas-telemetry
+  - is aligned with [semantic conventions](https://github.com/open-telemetry/semantic-conventions/tree/main)
 
+![otel-baggage.svg](images/otel4s-module-structure.png)
+
+Modules
+* `otel4s-core`
+* `otel4s-sdk` - under development, not published yet
+* `otel4s-oteljava` (we use this)
+
+Problems
+* context propagation
+  - auto collected metrics + custom tracing with otel4s
+
+> Let's explore the TNC API codebase together.
 
 Custom Availability Tests
 ===========================
 
+* In pg env it is hard to utilize standard availability tests
 * Implemented using Appinsight Classic API
 
 ```
@@ -441,6 +472,7 @@ import doobie.Transactor
 import doobie.implicits._
 import io.circe.syntax._
 import scala.concurrent.duration._
+import org.typelevel.log4cats.Logger
 
 case class Databases(conductorConn: Boolean, nasConn: Boolean)
 case class AppStatus(databases: Databases)
@@ -480,6 +512,48 @@ private def newAvailabilityTelemetry = {
 }
 
 ```
+
+AppInsight dashboard
+====================
+
+* Explore nas-tnc-appinsight general dashboard
+  - browsing logs
+  - browsing exceptions
+  - browsing requests
+  - exploring metrics
+    - overriding time settings
+* how to create your own dashboard
+  - local
+  - shared
+
+AppInsight Alerts (Monitoring)
+==============================
+
+* Alert rules
+* Action groups
+  - sending emails
+  - sending message to teams
+    + ms teams incoming webhook not compatible with appinsight action groups webhook
+    + solution le's write a [bridge](https://github.com/ssledz/appinsights-msteams-bridge)
+* Let's test alerts
+
+Backup slides
+==============
+
+# Local environment why is it important ?
+
+* speeds work
+* easier to debug
+
+# k9s
+
+Manage Your Kubernetes Clusters In Style
+
+# test pyramid
+
+![otel-baggage.svg](images/test-pyramid.jpg)
+
+How to utilize interfaces to easier your work
 
 Resources
 =========
