@@ -1,7 +1,13 @@
 Agenda
 ======
 
-* Open Telemtry Architecture
+* Open Telemetry Architecture
+* Open Telemetry Signals
+  - Traces
+  - Metrics
+  - Logs
+  - Events
+  - Baggage
 
 
 
@@ -19,14 +25,14 @@ Open Telemetry (2019) = OpenTracing (in 2016 became Cloud Native Computing Found
                       + OpenCensus (opensourced by Google in 2018)
 ```
 
-Goals:
+Goals
   * Monitoring    - collects and analyzes telemetry data and acts according to
                     the objectives defined (e.g., alerts, notifies)
   * Observability - is the ability to ask questions about the holistic state
                     of a system through the signals it generates.
 
 
-Components
+Components (more [here](https://opentelemetry.io/docs/what-is-opentelemetry/#main-opentelemetry-components))
   * App
     - API (SDK)
     - Processing
@@ -41,8 +47,7 @@ Components
 API -> Processing -> Exporter ------> Receivers -> Processors -> Exporters -> telemtry db
 ```
 
-More [here](https://opentelemetry.io/docs/what-is-opentelemetry/#main-opentelemetry-components)
-
+![otel-collector.svg](images/otel-collector.svg)
 
 Telemetry [signals](https://opentelemetry.io/docs/concepts/signals/)
   - logs
@@ -193,17 +198,17 @@ A measurement captured at runtime
 https://opentelemetry.io/docs/concepts/signals/metrics
 
 Components
-  * Meter Provider
-  * Meter
-  * Metric Exporter
+  * `Meter Provider`
+  * `Meter`
+  * `Metric Exporter`
 
 Metric Instruments
-  * Counter - value that accumulates (don't goes down)
-  * Asynchronous Counter (collected once by each export)
-  * UpDownCounter (like counter but can goes down)
-  * Asynchronous UpDownCounter
-  * Gauge - measures a current value at the time it is read
-  * Histogram -  a client-side aggregation of values
+  * `Counter` - value that accumulates (don't goes down)
+  * `Asynchronous Counter` (collected once by each export)
+  * `UpDownCounter` (like counter but can goes down)
+  * `Asynchronous UpDownCounter`
+  * `Gauge` - measures a current value at the time it is read
+  * `Histogram` -  a client-side aggregation of values
                 (How many requests take fewer than 1s?)
 
 Logs
@@ -215,12 +220,179 @@ unstructured, with metadata.
 In OpenTelemetry, any data that is not part of a distributed trace or a metric
 is a log.
 
-Events are a specific type of log
+Events are a specific type of log.
+
+* Components
+  - Log Appender / Bridge (`com.microsoft.applicationinsights.logback.ApplicationInsightsAppender`)
+  - Logger Provider (`logback`)
+  - Logger (`log4cats`)
+  - Log Record Exporter
+  - Log Record
+    + [Log and Event Record Definition](https://opentelemetry.io/docs/specs/otel/logs/data-model/#log-and-event-record-definition)
+
 
 Baggage
-======
+========
 
-TODO
+![otel-baggage.svg](images/otel-baggage.svg)
+
+
+Enable Azure Monitor OpenTelemetry for Java/Scala App
+=====================================================
+
+## Steps
+
+* Download the `applicationinsights-agent-3.4.14.jar` file.
+* Add java agent: `-javaagent:"path/to/applicationinsights-agent-3.4.14.jar"`
+* Setup connection string `APPLICATIONINSIGHTS_CONNECTION_STRING=<Your Connection String>`
+* Optionally provide configuration file `applicationinsights.json`
+* Optionally setup log appender `logback.xml`
+
+For more info go [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=java)
+
+## Java agent configuration in sbt
+
+Add sbt plugin
+```
+addSbtPlugin("com.github.sbt" % "sbt-javaagent" % "0.1.8")
+```
+Configure project in `build.sbt` file
+```
+lazy val core = (project in file("modules/core"))
+  ...
+  .enablePlugins(JavaAgent)
+  .settings(
+    ...
+    javaAgents += Libraries.AzureAppInsightsAgent,
+    ...
+  )
+```
+
+## Configuration file `applicationinsights.json`
+
+When using `sbt-native-packager` put config into `src/universal` directory
+```
+.
+├── README.md
+├── azure-jdk-setup.yml
+├── azure-pipelines.yml
+├── build.sbt
+├── docker-compose.yml
+├── modules
+│   ├── core
+│   │   └── src
+│   │       ├── main
+│   │       │   ├── resources
+│   │       │   │   ├── application.conf
+│   │       │   │   ├── db
+│   │       │   │   ├── logback.xml
+│   │       │   │   └── swagger
+│   │       │   └── scala
+│   │       │       ├── com
+│   │       │       └── db
+│   │       └── universal
+│   │           └── applicationinsights-agent
+│   │               └── applicationinsights.json
+│   └── tests
+│       └── src
+│           ├── it
+│           │   ├── resources
+│           │   │   └── logback-test.xml
+│           │   └── scala
+│           │       └── com
+│           ├── main
+│           │   ├── resources
+│           │   │   └── logback.xml
+│           │   └── scala
+│           │       └── com
+│           └── test
+│               └── scala
+│                   └── com
+└── mysql.sh
+```
+
+Example config could look following ([full reference](https://learn.microsoft.com/en-us/azure/azure-monitor/app/java-standalone-config))
+
+```
+{
+  "connectionString": "...",
+  "role": {
+    "name": "my cloud role name"
+  },
+  "sampling": {
+    "percentage": 100
+  },
+  "jmxMetrics": [
+  ],
+  "customDimensions": {
+  },
+  "instrumentation": {
+    "logging": {
+      "level": "INFO"
+    },
+    "micrometer": {
+      "enabled": true
+    }
+  },
+  "proxy": {
+  },
+  "preview": {
+    "processors": [
+    ]
+  },
+  "selfDiagnostics": {
+    "destination": "file+console",
+    "level": "INFO",
+    "file": {
+      "path": "applicationinsights.log",
+      "maxSizeMb": 5,
+      "maxHistory": 1
+    }
+  }
+}
+```
+
+What can be set in `applicationinsights.json`
+* sampling
+* custom dimension
+* jmx metrics
+* auto instrumentation (enable / disable)
+* edit / remove / change / add attributes
+* self diagnostics (on / off)
+
+### Custom dimension
+
+`applicationinsights.json`
+```
+{
+  "customDimensions": {
+    "buildVersion": "${BUILD_INFO_VERSION}"
+  },
+}
+```
+
+In `build.sbt`
+```
+lazy val core = (project in file("modules/core"))
+  ...
+  .enablePlugins(DockerPlugin)
+  .enablePlugins(AshScriptPlugin)
+  ...
+  .settings(
+    ...
+    dockerEnvVars := Map("BUILD_INFO_VERSION" -> version.value)
+    ...
+  )
+```
+
+
+[//]: # ()
+[//]: # (* Install & Setup the client library)
+
+[//]: # (* using opentelemetry API)
+
+[//]: # (* using [otel4s]&#40;https://typelevel.org/otel4s/index.html&#41; &#40;OpenTelemetry implementation for Scala&#41;)
+
 
 Resources
 =========
@@ -232,5 +404,6 @@ Resources
 * [Semantic Conventions for Database Client Calls](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/database/database-spans.md)
 * [Semantic Conventions for Database Metrics](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/database/database-metrics.md)
 * [Semantic Conventions for JVM Metrics](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/runtime/jvm-metrics.md)
+* [Enable Azure Monitor OpenTelemetry for .NET, Node.js, Python, and Java applications](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=java)
 
 
