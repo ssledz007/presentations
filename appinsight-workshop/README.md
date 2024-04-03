@@ -19,7 +19,7 @@ Agenda
 * Custom Availability Tests (Monitoring)
 * AppInsight dashboard
 * AppInsight alerts
-  - alert
+  - alert rules
   - action groups
 * backup slides
   - local environment why it is important
@@ -540,7 +540,7 @@ AppInsight Alerts (Monitoring)
 Backup slides
 ==============
 
-# Local environment why is it important ?
+# Local environment why it is important ?
 
 * speeds work
 * easier to debug
